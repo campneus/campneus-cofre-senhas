@@ -1,38 +1,22 @@
 {
-  "name": "cofre-senhas-campneus",
+  "name": "cofre-de-senhas",
   "version": "1.0.0",
-  "description": "Sistema de gerenciamento de senhas corporativas - Campneus",
+  "description": "Sistema de gerenciamento de senhas",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "author": "Seu Nome",
+  "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "express-session": "^1.17.3",
-    "express-flash": "^0.0.2",
-    "ejs": "^3.1.9",
-    "pg": "^8.11.3",
-    "bcryptjs": "^2.4.3",
-    "dotenv": "^16.3.1",
-    "body-parser": "^1.20.2",
-    "express-validator": "^7.0.1",
-    "method-override": "^3.0.0",
-    "connect-flash": "^0.1.1"
+    "express": "^4.17.1",
+    "dotenv": "^10.0.0",
+    "pg": "^8.7.1",
+    "bcrypt": "^5.0.1",
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
-  },
-  "engines": {
-    "node": ">=16.0.0"
-  },
-  "keywords": [
-    "password-manager",
-    "corporate",
-    "security",
-    "nodejs",
-    "postgresql"
-  ],
-  "author": "Campneus",
-  "license": "MIT"
+    "nodemon": "^2.0.12"
+  }
 }
