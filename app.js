@@ -9,6 +9,7 @@ const app = express();
 
 // Middleware to parse JSON requests
 app.use(express.json());
+app.use(express.static('public'));
 
 // Import routes
 const dashboardRoutes = require('./routes/dashboard');
@@ -25,8 +26,8 @@ app.use('/localidades', localidadesRoutes);
 app.use('/senhas', senhasRoutes);
 
 // Define a simple route for the root
-app.get('/', (req, res) => {
-    res.send('Welcome to the Password Vault System!');
+app.get("/", (req, res) => {
+    res.sendFile(__dirname + "/public/login.html");
 });
 
 // Error handling middleware

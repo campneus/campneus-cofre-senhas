@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Password Vault</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <h1>Password Vault Dashboard</h1>
+            <button id="logoutBtn">Logout</button>
+        </header>
+        
+        <nav>
+            <ul>
+                <li><a href="#" onclick="showSection('passwords')">Senhas</a></li>
+                <li><a href="#" onclick="showSection('locations')">Localidades</a></li>
+                <li><a href="#" onclick="showSection('users')">Usuários</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <div id="passwords" class="section">
+                <h2>Gerenciar Senhas</h2>
+                <div id="passwordsList"></div>
+            </div>
+
+            <div id="locations" class="section" style="display: none;">
+                <h2>Gerenciar Localidades</h2>
+                <div id="locationsList"></div>
+            </div>
+
+            <div id="users" class="section" style="display: none;">
+                <h2>Gerenciar Usuários</h2>
+                <div id="usersList"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check if user is authenticated
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/';
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = '/';
+        });
+
+        // Show different sections
+        function showSection(sectionName) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionName).style.display = 'block';
+        }
+
+        // Load initial data
+        async function loadData() {
+            try {
+                const response = await fetch('/dashboard', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Dashboard data:', data);
+                } else {
+                    console.error('Failed to load dashboard data');
+                    localStorage.removeItem('token');
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Load data when page loads
+        loadData();
+    </script>
+</body>
+</html>
+
