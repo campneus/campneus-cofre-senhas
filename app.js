@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const path = require('path');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -9,7 +10,6 @@ const app = express();
 
 // Middleware to parse JSON requests
 app.use(express.json());
-app.use(express.static('public'));
 
 // Import routes
 const dashboardRoutes = require('./routes/dashboard');
@@ -18,17 +18,25 @@ const usuariosRoutes = require('./routes/usuarios');
 const localidadesRoutes = require('./routes/localidades');
 const senhasRoutes = require('./routes/senhas');
 
-// Use routes
+// Use routes BEFORE static files
 app.use('/dashboard', dashboardRoutes);
 app.use('/auth', authRoutes);
 app.use('/usuarios', usuariosRoutes);
 app.use('/localidades', localidadesRoutes);
 app.use('/senhas', senhasRoutes);
 
-// Define a simple route for the root
+// Define specific routes BEFORE static middleware
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/public/login.html");
+    res.sendFile(path.join(__dirname, "public", "login.html"));
 });
+
+// Route for dashboard.html (serve directly)
+app.get("/dashboard.html", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+});
+
+// Serve static files from public directory AFTER specific routes
+app.use(express.static('public'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

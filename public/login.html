@@ -1,35 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Password Vault</title>
+    <title>Login - Cofre de Senhas Campneus</title>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <div class="login-container">
-        <h2>Login</h2>
+        <h2>Login - Cofre de Senhas</h2>
         <form id="loginForm">
             <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required placeholder="seu.email@campneus.com.br">
             </div>
             <div class="form-group">
-                <label for="password">Password:</label>
+                <label for="password">Senha:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit">Login</button>
+            <button type="submit">Entrar</button>
         </form>
         <p id="message" style="color: red;"></p>
+        
+        <div class="demo-info" style="margin-top: 20px; padding: 15px; background-color: #f0f8ff; border-radius: 5px; font-size: 14px;">
+            <h4>Usuários de Demonstração:</h4>
+            <p><strong>Admin:</strong> admin@campneus.com.br / admin123</p>
+            <p><strong>Usuário:</strong> joao.silva@campneus.com.br / admin123</p>
+            <p><strong>Usuário:</strong> maria.santos@campneus.com.br / admin123</p>
+            <p><strong>Visualizador:</strong> pedro.oliveira@campneus.com.br / admin123</p>
+        </div>
     </div>
 
     <script>
         document.getElementById("loginForm").addEventListener("submit", async (event) => {
             event.preventDefault();
 
-            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
             const messageElement = document.getElementById("message");
+
+            // Limpar mensagem anterior
+            messageElement.textContent = "";
 
             try {
                 const response = await fetch("/auth/login", {
@@ -37,20 +48,29 @@
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ username, password }),
+                    body: JSON.stringify({ email, password }),
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
                     localStorage.setItem("token", data.token);
-                    window.location.href = "/dashboard"; // Redirect to dashboard on successful login
+                    localStorage.setItem("user", JSON.stringify(data.user));
+                    messageElement.style.color = "green";
+                    messageElement.textContent = "Login realizado com sucesso! Redirecionando...";
+                    
+                    // Redirecionar após 1 segundo
+                    setTimeout(() => {
+                        window.location.href = "/dashboard.html";
+                    }, 1000);
                 } else {
-                    messageElement.textContent = data.message || "Login failed.";
+                    messageElement.style.color = "red";
+                    messageElement.textContent = data.message || "Falha no login.";
                 }
             } catch (error) {
-                console.error("Error during login:", error);
-                messageElement.textContent = "An error occurred. Please try again.";
+                console.error("Erro durante o login:", error);
+                messageElement.style.color = "red";
+                messageElement.textContent = "Ocorreu um erro. Tente novamente.";
             }
         });
     </script>
