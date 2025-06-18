@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authenticate = require("../middleware/auth");
 
 // Mock data de localidades (substitua por consultas ao banco de dados em um aplicativo real)
 let localidades = [

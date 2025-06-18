@@ -65,25 +65,90 @@
         // Load initial data
         async function loadData() {
             try {
-                const response = await fetch('/dashboard/data', {
+                const response = await fetch("/dashboard/data", {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        "Authorization": `Bearer ${token}`
                     }
                 });
                 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Dashboard data:', data);
+                    console.log("Dashboard data:", data);
+                    // Aqui você pode adicionar a lógica para carregar os dados de senhas, localidades e usuários
+                    loadPasswords();
+                    loadLocations();
+                    loadUsers();
                 } else {
-                    console.error('Failed to load dashboard data');
+                    console.error("Failed to load dashboard data");
                     if (response.status === 401 || response.status === 403) {
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('user');
-                        window.location.href = '/';
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("user");
+                        window.location.href = "/";
                     }
                 }
             } catch (error) {
-                console.error('Error loading dashboard:', error);
+                console.error("Error loading dashboard:", error);
+            }
+        }
+
+        // Funções para carregar e exibir dados
+        async function loadPasswords() {
+            try {
+                const response = await fetch("/senhas", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+                const passwords = await response.json();
+                const passwordsList = document.getElementById("passwordsList");
+                passwordsList.innerHTML = "";
+                passwords.forEach(password => {
+                    const div = document.createElement("div");
+                    div.innerHTML = `<p><strong>Site:</strong> ${password.site}</p><p><strong>Usuário:</strong> ${password.username}</p><p><strong>Senha:</strong> ${password.password}</p><hr>`;
+                    passwordsList.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Erro ao carregar senhas:", error);
+            }
+        }
+
+        async function loadLocations() {
+            try {
+                const response = await fetch("/localidades", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+                const locations = await response.json();
+                const locationsList = document.getElementById("locationsList");
+                locationsList.innerHTML = "";
+                locations.forEach(location => {
+                    const div = document.createElement("div");
+                    div.innerHTML = `<p><strong>Nome:</strong> ${location.nome}</p><p><strong>Endereço:</strong> ${location.endereco}</p><hr>`;
+                    locationsList.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Erro ao carregar localidades:", error);
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const response = await fetch("/usuarios", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+                const users = await response.json();
+                const usersList = document.getElementById("usersList");
+                usersList.innerHTML = "";
+                users.forEach(user => {
+                    const div = document.createElement("div");
+                    div.innerHTML = `<p><strong>Nome:</strong> ${user.nome}</p><p><strong>Email:</strong> ${user.email}</p><p><strong>Nível de Acesso:</strong> ${user.nivel_acesso}</p><hr>`;
+                    usersList.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Erro ao carregar usuários:", error);
             }
         }
 

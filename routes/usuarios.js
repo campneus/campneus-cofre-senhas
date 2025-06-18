@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authenticate = require("../middleware/auth");
 
 // Mock data de usuários (substitua por consultas ao banco de dados em um aplicativo real)
 let users = [
