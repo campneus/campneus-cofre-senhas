@@ -18,12 +18,17 @@ const usuariosRoutes = require("./routes/usuarios");
 const localidadesRoutes = require("./routes/localidades");
 const senhasRoutes = require("./routes/senhas");
 
+// Import auth middleware
+const authenticate = require('./middleware/auth');
+
 // Use routes BEFORE static files
 app.use("/dashboard", dashboardRoutes);
 app.use("/auth", authRoutes);
-app.use("/usuarios", usuariosRoutes);
-app.use("/localidades", localidadesRoutes);
-app.use("/senhas", senhasRoutes);
+
+// Apply authentication middleware to protected routes
+app.use("/usuarios", authenticate, usuariosRoutes);
+app.use("/localidades", authenticate, localidadesRoutes);
+app.use("/senhas", authenticate, senhasRoutes);
 
 // Define specific routes BEFORE static middleware
 app.get("/", (req, res) => {

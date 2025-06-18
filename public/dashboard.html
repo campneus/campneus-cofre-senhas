@@ -5,6 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Password Vault</title>
     <link rel="stylesheet" href="/style.css">
+    <style>
+        /* Custom styles for left menu */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: auto 1fr;
+            grid-template-areas:
+                "header header"
+                "nav main";
+            height: 100vh;
+        }
+        .dashboard-container header {
+            grid-area: header;
+        }
+        .dashboard-container nav {
+            grid-area: nav;
+            background-color: var(--cor-primaria);
+            height: 100%;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        .dashboard-container main {
+            grid-area: main;
+            overflow-y: auto;
+        }
+        .dashboard-container nav ul {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .dashboard-container nav li {
+            margin-right: 0;
+            margin-bottom: 1rem;
+        }
+        .dashboard-container nav a {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            width: 100%;
+        }
+        .dashboard-container nav a:hover {
+            background-color: var(--cor-secundaria);
+            color: var(--cor-fundo);
+        }
+        .table {
+            width: 100%;
+            margin-top: 1rem;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
@@ -15,9 +62,9 @@
         
         <nav>
             <ul>
-                <li><a href="#" onclick="showSection('passwords')">Senhas</a></li>
-                <li><a href="#" onclick="showSection('locations')">Localidades</a></li>
-                <li><a href="#" onclick="showSection('users')">Usuários</a></li>
+                <li><a href="#" onclick="showSection('passwords'); loadPasswords();">Senhas</a></li>
+                <li><a href="#" onclick="showSection('locations'); loadLocations();">Localidades</a></li>
+                <li><a href="#" onclick="showSection('users'); loadUsers();">Usuários</a></li>
             </ul>
         </nav>
 
@@ -62,93 +109,173 @@
             document.getElementById(sectionName).style.display = 'block';
         }
 
-        // Load initial data
-        async function loadData() {
+        // Load passwords data
+        async function loadPasswords() {
             try {
-                const response = await fetch("/dashboard/data", {
+                const response = await fetch('/senhas', {
                     headers: {
-                        "Authorization": `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`
                     }
                 });
                 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Dashboard data:", data);
-                    // Aqui você pode adicionar a lógica para carregar os dados de senhas, localidades e usuários
-                    loadPasswords();
-                    loadLocations();
-                    loadUsers();
+                    displayPasswords(data);
                 } else {
-                    console.error("Failed to load dashboard data");
+                    console.error('Failed to load passwords data');
+                    document.getElementById('passwordsList').innerHTML = '<div class="alert alert-error">Falha ao carregar os dados das senhas</div>';
+                }
+            } catch (error) {
+                console.error('Error loading passwords:', error);
+                document.getElementById('passwordsList').innerHTML = '<div class="alert alert-error">Erro ao carregar os dados das senhas</div>';
+            }
+        }
+
+        // Display passwords data
+        function displayPasswords(data) {
+            const container = document.getElementById('passwordsList');
+            if (data.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">Nenhuma senha encontrada</div>';
+                return;
+            }
+            
+            let html = '<table class="table">';
+            html += '<thead><tr><th>Site</th><th>Usuário</th><th>Senha</th><th>Ações</th></tr></thead><tbody>';
+            
+            data.forEach(senha => {
+                html += `<tr>
+                    <td>${senha.site}</td>
+                    <td>${senha.username}</td>
+                    <td>********</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm">Visualizar</button>
+                        <button class="btn btn-secondary btn-sm">Editar</button>
+                    </td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Load locations data
+        async function loadLocations() {
+            try {
+                const response = await fetch('/localidades', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayLocations(data);
+                } else {
+                    console.error('Failed to load locations data');
+                    document.getElementById('locationsList').innerHTML = '<div class="alert alert-error">Falha ao carregar os dados de localidades</div>';
+                }
+            } catch (error) {
+                console.error('Error loading locations:', error);
+                document.getElementById('locationsList').innerHTML = '<div class="alert alert-error">Erro ao carregar os dados de localidades</div>';
+            }
+        }
+
+        // Display locations data
+        function displayLocations(data) {
+            const container = document.getElementById('locationsList');
+            if (data.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">Nenhuma localidade encontrada</div>';
+                return;
+            }
+            
+            let html = '<table class="table">';
+            html += '<thead><tr><th>Nome</th><th>Estado</th><th>Ações</th></tr></thead><tbody>';
+            
+            data.forEach(localidade => {
+                html += `<tr>
+                    <td>${localidade.nome}</td>
+                    <td>${localidade.estado}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm">Editar</button>
+                    </td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Load users data
+        async function loadUsers() {
+            try {
+                const response = await fetch('/usuarios', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayUsers(data);
+                } else {
+                    console.error('Failed to load users data');
+                    document.getElementById('usersList').innerHTML = '<div class="alert alert-error">Falha ao carregar os dados de usuários</div>';
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                document.getElementById('usersList').innerHTML = '<div class="alert alert-error">Erro ao carregar os dados de usuários</div>';
+            }
+        }
+
+        // Display users data
+        function displayUsers(data) {
+            const container = document.getElementById('usersList');
+            if (data.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">Nenhum usuário encontrado</div>';
+                return;
+            }
+            
+            let html = '<table class="table">';
+            html += '<thead><tr><th>Nome</th><th>Email</th><th>Ações</th></tr></thead><tbody>';
+            
+            data.forEach(usuario => {
+                html += `<tr>
+                    <td>${usuario.name}</td>
+                    <td>${usuario.email}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm">Editar</button>
+                    </td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Load initial data
+        async function loadData() {
+            try {
+                const response = await fetch('/dashboard/data', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Dashboard data:', data);
+                    // Load default section (passwords)
+                    loadPasswords();
+                } else {
+                    console.error('Failed to load dashboard data');
                     if (response.status === 401 || response.status === 403) {
-                        localStorage.removeItem("token");
-                        localStorage.removeItem("user");
-                        window.location.href = "/";
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = '/';
                     }
                 }
             } catch (error) {
-                console.error("Error loading dashboard:", error);
-            }
-        }
-
-        // Funções para carregar e exibir dados
-        async function loadPasswords() {
-            try {
-                const response = await fetch("/senhas", {
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                });
-                const passwords = await response.json();
-                const passwordsList = document.getElementById("passwordsList");
-                passwordsList.innerHTML = "";
-                passwords.forEach(password => {
-                    const div = document.createElement("div");
-                    div.innerHTML = `<p><strong>Site:</strong> ${password.site}</p><p><strong>Usuário:</strong> ${password.username}</p><p><strong>Senha:</strong> ${password.password}</p><hr>`;
-                    passwordsList.appendChild(div);
-                });
-            } catch (error) {
-                console.error("Erro ao carregar senhas:", error);
-            }
-        }
-
-        async function loadLocations() {
-            try {
-                const response = await fetch("/localidades", {
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                });
-                const locations = await response.json();
-                const locationsList = document.getElementById("locationsList");
-                locationsList.innerHTML = "";
-                locations.forEach(location => {
-                    const div = document.createElement("div");
-                    div.innerHTML = `<p><strong>Nome:</strong> ${location.nome}</p><p><strong>Endereço:</strong> ${location.endereco}</p><hr>`;
-                    locationsList.appendChild(div);
-                });
-            } catch (error) {
-                console.error("Erro ao carregar localidades:", error);
-            }
-        }
-
-        async function loadUsers() {
-            try {
-                const response = await fetch("/usuarios", {
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                });
-                const users = await response.json();
-                const usersList = document.getElementById("usersList");
-                usersList.innerHTML = "";
-                users.forEach(user => {
-                    const div = document.createElement("div");
-                    div.innerHTML = `<p><strong>Nome:</strong> ${user.nome}</p><p><strong>Email:</strong> ${user.email}</p><p><strong>Nível de Acesso:</strong> ${user.nivel_acesso}</p><hr>`;
-                    usersList.appendChild(div);
-                });
-            } catch (error) {
-                console.error("Erro ao carregar usuários:", error);
+                console.error('Error loading dashboard:', error);
             }
         }
 
