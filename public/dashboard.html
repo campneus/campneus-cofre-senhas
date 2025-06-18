@@ -49,6 +49,7 @@
         // Logout functionality
         document.getElementById('logoutBtn').addEventListener('click', () => {
             localStorage.removeItem('token');
+            localStorage.removeItem('user');
             window.location.href = '/';
         });
 
@@ -64,7 +65,7 @@
         // Load initial data
         async function loadData() {
             try {
-                const response = await fetch('/dashboard', {
+                const response = await fetch('/dashboard/data', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -75,8 +76,11 @@
                     console.log('Dashboard data:', data);
                 } else {
                     console.error('Failed to load dashboard data');
-                    localStorage.removeItem('token');
-                    window.location.href = '/';
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = '/';
+                    }
                 }
             } catch (error) {
                 console.error('Error loading dashboard:', error);
