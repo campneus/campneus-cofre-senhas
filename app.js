@@ -1,6 +1,6 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const path = require('path');
+const express = require("express");
+const dotenv = require("dotenv");
+const path = require("path");
 
 // Load environment variables from .env file
 dotenv.config();
@@ -12,36 +12,31 @@ const app = express();
 app.use(express.json());
 
 // Import routes
-const dashboardRoutes = require('./routes/dashboard');
-const authRoutes = require('./routes/auth');
-const usuariosRoutes = require('./routes/usuarios');
-const localidadesRoutes = require('./routes/localidades');
-const senhasRoutes = require('./routes/senhas');
+const dashboardRoutes = require("./routes/dashboard");
+const authRoutes = require("./routes/auth");
+const usuariosRoutes = require("./routes/usuarios");
+const localidadesRoutes = require("./routes/localidades");
+const senhasRoutes = require("./routes/senhas");
 
 // Use routes BEFORE static files
-app.use('/dashboard', dashboardRoutes);
-app.use('/auth', authRoutes);
-app.use('/usuarios', usuariosRoutes);
-app.use('/localidades', localidadesRoutes);
-app.use('/senhas', senhasRoutes);
+app.use("/dashboard", dashboardRoutes);
+app.use("/auth", authRoutes);
+app.use("/usuarios", usuariosRoutes);
+app.use("/localidades", localidadesRoutes);
+app.use("/senhas", senhasRoutes);
 
 // Define specific routes BEFORE static middleware
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
-// Route for dashboard.html (serve directly)
-app.get("/dashboard.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "dashboard.html"));
-});
-
 // Serve static files from public directory AFTER specific routes
-app.use(express.static('public'));
+app.use(express.static("public"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send('Something broke!');
+    res.status(500).send("Something broke!");
 });
 
 // Define the port from environment variables or default to 3000
